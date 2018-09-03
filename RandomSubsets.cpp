@@ -6,80 +6,6 @@
 #include <random>
 #include <time.h>
 
-int get_number(std::default_random_engine &generator, std::vector<std::tuple<int, int>> &gaps, int &size) {
-    std::vector<std::tuple<int, int>>::iterator it;
-    // std::cout << "Begin" << std::endl;
-    // for (it = gaps.begin(); it != gaps.end(); ++it) {
-    //     std::cout << "(" << std::get<0>(*it) << ", " << std::get<1>(*it) << ")" << std::endl;
-    // }
-
-    int num = std::uniform_int_distribution<int>{0, size - 1}(generator);
-    // std::cout << "num:\t" << num << std::endl;
-    // std::vector<std::tuple<int, int>>::iterator it;
-    for (it = gaps.begin(); it != gaps.end(); ++it) {
-        int &lower = std::get<0>(*it);
-        int &upper = std::get<1>(*it);
-        if (lower + num <= upper) {
-
-            int index = it - gaps.begin();
-
-            /* edit gaps */
-            if (num == 0) {
-                // trim range
-                const int return_int = lower + num;
-                if (upper == lower) {
-                    gaps.erase(it);
-                } else {
-                    lower += 1;
-                }
-
-                // std::cout << "End" << std::endl;
-                // for (it = gaps.begin(); it != gaps.end(); ++it) {
-                //     std::cout << "(" << std::get<0>(*it) << ", " << std::get<1>(*it) << ")" << std::endl;
-                // }
-
-                size--;
-                return return_int;
-            } else if (lower + num == upper) {
-                // trim range
-                upper -= 1;
-
-                // std::cout << "End" << std::endl;
-                // for (it = gaps.begin(); it != gaps.end(); ++it) {
-                //     std::cout << "(" << std::get<0>(*it) << ", " << std::get<1>(*it) << ")" << std::endl;
-                // }
-
-                size--;
-                return lower + num;
-            }
-            const int prev_lower = lower;
-            lower = lower + num + 1;
-            if (index > 0) {
-                int &prev_upper = std::get<1>(gaps.at(index - 1));
-                if (prev_upper + 1 == prev_lower + num - 1) {
-                    prev_upper+= 1;
-                } else {
-                    // std::cout << "inserting" << std::endl;
-                    gaps.insert(gaps.begin() + index, std::make_tuple(prev_lower, prev_lower + num - 1));
-                }
-            } else {
-                // std::cout << "inserting" << std::endl;
-                gaps.insert(gaps.begin() + index, std::make_tuple(prev_lower, prev_lower + num - 1));
-            }
-
-            // std::cout << "End" << std::endl;
-            // for (it = gaps.begin(); it != gaps.end(); ++it) {
-            //     std::cout << "(" << std::get<0>(*it) << ", " << std::get<1>(*it) << ")" << std::endl;
-            // }
-
-            size--;
-            return prev_lower + num;
-        } else {
-            num -= upper - lower + 1;
-        }
-    }
-}
-
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cout << "Usage:" << std::endl << "\t./a.out <K> <N>" << std::endl;
@@ -113,13 +39,7 @@ int main(int argc, char* argv[]) {
         bool contains;
         int num;
         do {
-            // num = std::uniform_int_distribution<int>{1, size}(generator);
-            num = get_number(generator, gaps, size);
-            contains = numbers.find(num) != numbers.end();
-            if (contains) {
-                std::cout << "THAT IS IMPOSSIBLE" << std::endl;
-                exit(-1);
-            }
+            num = std::uniform_int_distribution<int>{1, size}(generator);
         } while (contains);
         numbers.insert(num);
     }
