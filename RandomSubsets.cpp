@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include <string>
 #include <set>
 #include <tuple>
@@ -29,17 +30,17 @@ int main(int argc, char* argv[]) {
             b. Guaranteed worst case O(log n) insert and retrieval
     */
     std::set<int> numbers;
-    std::vector<std::tuple<int, int>> gaps (1, std::make_tuple(1, n));
-    /* keeps track of how many numbers in subset are available */
-    int size = n;
    
     std::default_random_engine generator;
-    generator.seed(time(nullptr));
+    std::uniform_int_distribution<int> distribution(1, n);
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator.seed(seed);
     for (int i = 0; i < k; ++i) {
         bool contains;
         int num;
         do {
-            num = std::uniform_int_distribution<int>{1, size}(generator);
+            num = distribution(generator);
+            contains = numbers.find(num) != numbers.end();
         } while (contains);
         numbers.insert(num);
     }
