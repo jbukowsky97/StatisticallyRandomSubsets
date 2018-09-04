@@ -5,22 +5,34 @@
 #include <tuple>
 #include <vector>
 #include <random>
-#include <time.h>
+#include <regex>
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
         std::cout << "Usage:" << std::endl << "\t./a.out <K> <N>" << std::endl;
         exit(1);
     }
-    std::string kStr = argv[1];
-    std::string nStr = argv[2];
-    int k;
-    int n;
+
+    std::string k_str = argv[1];
+    std::string n_str = argv[2];
+
+    if (!std::regex_match(k_str, std::regex("[0-9]+")) || !std::regex_match(n_str, std::regex("[0-9]+"))) {
+        std::cout << "N and K must be integer values less than 2^64 - 1" << std::endl;
+        exit(1);
+    }
+
+    unsigned long long int k;
+    unsigned long long int n;
+    
     try {
-        k = std::stoi(kStr);
-        n = std::stoi(nStr);
+        k = std::stoull(k_str);
+        n = std::stoull(n_str);
     } catch (...) {
-        std::cout << "N and K must be integer values" << std::endl;
+        std::cout << "N and K must be integer values less than 2^64 - 1" << std::endl;
+        exit(1);
+    }
+    if (k > n) {
+        std::cout << "K must be less than or equal to N" << std::endl;
         exit(1);
     }
     /*
@@ -29,15 +41,15 @@ int main(int argc, char* argv[]) {
             a. Sorted, no need to sort later and lose performance
             b. Guaranteed worst case O(log n) insert and retrieval
     */
-    std::set<int> numbers;
+    std::set<unsigned long long int> numbers;
    
     std::default_random_engine generator;
-    std::uniform_int_distribution<int> distribution(1, n);
+    std::uniform_int_distribution<unsigned long long int> distribution(1, n);
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     generator.seed(seed);
-    for (int i = 0; i < k; ++i) {
+    for (unsigned long long int i = 0; i < k; ++i) {
         bool contains;
-        int num;
+        unsigned long long int num;
         do {
             num = distribution(generator);
             contains = numbers.find(num) != numbers.end();
@@ -45,7 +57,7 @@ int main(int argc, char* argv[]) {
         numbers.insert(num);
     }
 
-    std::set<int>::iterator it;
+    std::set<unsigned long long int>::iterator it;
     for (it = numbers.begin(); it != numbers.end(); ++it) {
         std::cout << *it << std::endl;
     }
