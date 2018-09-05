@@ -1,0 +1,8 @@
+> g++ RandomSubsets.cpp -std=c++17
+> ./a.out 5 1000
+278
+660
+688
+816
+823
+>
