@@ -50,6 +50,9 @@ int main(int argc, char* argv[]) {
     */
     std::set<unsigned long long int> numbers;
 
+    /* to hold return value of insert into set, to see if number already existed */
+    std::pair<std::set<unsigned long long int>::iterator,bool> returnValue;
+
     /* create random number generator */
     std::default_random_engine generator;
 
@@ -62,14 +65,11 @@ int main(int argc, char* argv[]) {
 
     /* generate K integers in range 1..N */
     for (unsigned long long int i = 0; i < k; ++i) {
-        bool contains;
-        unsigned long long int num;
         /* generate number, redo if number already in numbers */
         do {
-            num = distribution(generator);
-            contains = numbers.find(num) != numbers.end();
-        } while (contains);
-        numbers.insert(num);
+            /* capture returnValue, to check if number already existed without performance cost */
+            returnValue = numbers.insert(distribution(generator));
+        } while (!returnValue.second);
     }
 
     /* print out numbers */
