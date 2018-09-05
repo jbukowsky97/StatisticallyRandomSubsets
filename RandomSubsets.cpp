@@ -4,8 +4,6 @@
 #include <regex>
 #include <set>
 #include <string>
-#include <tuple>
-#include <vector>
 
 int main(int argc, char* argv[]) {
 
